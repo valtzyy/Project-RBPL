@@ -479,10 +479,6 @@ export type PengirimanUncheckedUpdateOneWithoutInvoiceNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PengirimanUpdateToOneWithWhereWithoutInvoiceInput, Prisma.PengirimanUpdateWithoutInvoiceInput>, Prisma.PengirimanUncheckedUpdateWithoutInvoiceInput>
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type EnumStatusPengirimanFieldUpdateOperationsInput = {
   set?: $Enums.StatusPengiriman
 }

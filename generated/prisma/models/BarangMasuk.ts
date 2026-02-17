@@ -30,14 +30,12 @@ export type BarangMasukAvgAggregateOutputType = {
   id: number | null
   jumlahMasuk: number | null
   barangId: number | null
-  userId: number | null
 }
 
 export type BarangMasukSumAggregateOutputType = {
   id: number | null
   jumlahMasuk: number | null
   barangId: number | null
-  userId: number | null
 }
 
 export type BarangMasukMinAggregateOutputType = {
@@ -48,7 +46,7 @@ export type BarangMasukMinAggregateOutputType = {
   nomorDokumen: string | null
   createdAt: Date | null
   barangId: number | null
-  userId: number | null
+  userId: string | null
 }
 
 export type BarangMasukMaxAggregateOutputType = {
@@ -59,7 +57,7 @@ export type BarangMasukMaxAggregateOutputType = {
   nomorDokumen: string | null
   createdAt: Date | null
   barangId: number | null
-  userId: number | null
+  userId: string | null
 }
 
 export type BarangMasukCountAggregateOutputType = {
@@ -79,14 +77,12 @@ export type BarangMasukAvgAggregateInputType = {
   id?: true
   jumlahMasuk?: true
   barangId?: true
-  userId?: true
 }
 
 export type BarangMasukSumAggregateInputType = {
   id?: true
   jumlahMasuk?: true
   barangId?: true
-  userId?: true
 }
 
 export type BarangMasukMinAggregateInputType = {
@@ -217,7 +213,7 @@ export type BarangMasukGroupByOutputType = {
   nomorDokumen: string | null
   createdAt: Date
   barangId: number
-  userId: number
+  userId: string
   _count: BarangMasukCountAggregateOutputType | null
   _avg: BarangMasukAvgAggregateOutputType | null
   _sum: BarangMasukSumAggregateOutputType | null
@@ -251,7 +247,7 @@ export type BarangMasukWhereInput = {
   nomorDokumen?: Prisma.StringNullableFilter<"BarangMasuk"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BarangMasuk"> | Date | string
   barangId?: Prisma.IntFilter<"BarangMasuk"> | number
-  userId?: Prisma.IntFilter<"BarangMasuk"> | number
+  userId?: Prisma.StringFilter<"BarangMasuk"> | string
   barang?: Prisma.XOR<Prisma.BarangScalarRelationFilter, Prisma.BarangWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -280,7 +276,7 @@ export type BarangMasukWhereUniqueInput = Prisma.AtLeast<{
   nomorDokumen?: Prisma.StringNullableFilter<"BarangMasuk"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BarangMasuk"> | Date | string
   barangId?: Prisma.IntFilter<"BarangMasuk"> | number
-  userId?: Prisma.IntFilter<"BarangMasuk"> | number
+  userId?: Prisma.StringFilter<"BarangMasuk"> | string
   barang?: Prisma.XOR<Prisma.BarangScalarRelationFilter, Prisma.BarangWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
@@ -312,7 +308,7 @@ export type BarangMasukScalarWhereWithAggregatesInput = {
   nomorDokumen?: Prisma.StringNullableWithAggregatesFilter<"BarangMasuk"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"BarangMasuk"> | Date | string
   barangId?: Prisma.IntWithAggregatesFilter<"BarangMasuk"> | number
-  userId?: Prisma.IntWithAggregatesFilter<"BarangMasuk"> | number
+  userId?: Prisma.StringWithAggregatesFilter<"BarangMasuk"> | string
 }
 
 export type BarangMasukCreateInput = {
@@ -333,7 +329,7 @@ export type BarangMasukUncheckedCreateInput = {
   nomorDokumen?: string | null
   createdAt?: Date | string
   barangId: number
-  userId: number
+  userId: string
 }
 
 export type BarangMasukUpdateInput = {
@@ -354,7 +350,7 @@ export type BarangMasukUncheckedUpdateInput = {
   nomorDokumen?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   barangId?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type BarangMasukCreateManyInput = {
@@ -365,7 +361,7 @@ export type BarangMasukCreateManyInput = {
   nomorDokumen?: string | null
   createdAt?: Date | string
   barangId: number
-  userId: number
+  userId: string
 }
 
 export type BarangMasukUpdateManyMutationInput = {
@@ -384,7 +380,7 @@ export type BarangMasukUncheckedUpdateManyInput = {
   nomorDokumen?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   barangId?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type BarangMasukListRelationFilter = {
@@ -412,7 +408,6 @@ export type BarangMasukAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   jumlahMasuk?: Prisma.SortOrder
   barangId?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
 }
 
 export type BarangMasukMaxOrderByAggregateInput = {
@@ -441,7 +436,6 @@ export type BarangMasukSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   jumlahMasuk?: Prisma.SortOrder
   barangId?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
 }
 
 export type BarangMasukCreateNestedManyWithoutUserInput = {
@@ -584,7 +578,7 @@ export type BarangMasukScalarWhereInput = {
   nomorDokumen?: Prisma.StringNullableFilter<"BarangMasuk"> | string | null
   createdAt?: Prisma.DateTimeFilter<"BarangMasuk"> | Date | string
   barangId?: Prisma.IntFilter<"BarangMasuk"> | number
-  userId?: Prisma.IntFilter<"BarangMasuk"> | number
+  userId?: Prisma.StringFilter<"BarangMasuk"> | string
 }
 
 export type BarangMasukCreateWithoutBarangInput = {
@@ -603,7 +597,7 @@ export type BarangMasukUncheckedCreateWithoutBarangInput = {
   supplier: string
   nomorDokumen?: string | null
   createdAt?: Date | string
-  userId: number
+  userId: string
 }
 
 export type BarangMasukCreateOrConnectWithoutBarangInput = {
@@ -678,7 +672,7 @@ export type BarangMasukCreateManyBarangInput = {
   supplier: string
   nomorDokumen?: string | null
   createdAt?: Date | string
-  userId: number
+  userId: string
 }
 
 export type BarangMasukUpdateWithoutBarangInput = {
@@ -697,7 +691,7 @@ export type BarangMasukUncheckedUpdateWithoutBarangInput = {
   supplier?: Prisma.StringFieldUpdateOperationsInput | string
   nomorDokumen?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type BarangMasukUncheckedUpdateManyWithoutBarangInput = {
@@ -707,7 +701,7 @@ export type BarangMasukUncheckedUpdateManyWithoutBarangInput = {
   supplier?: Prisma.StringFieldUpdateOperationsInput | string
   nomorDokumen?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -790,7 +784,7 @@ export type $BarangMasukPayload<ExtArgs extends runtime.Types.Extensions.Interna
     nomorDokumen: string | null
     createdAt: Date
     barangId: number
-    userId: number
+    userId: string
   }, ExtArgs["result"]["barangMasuk"]>
   composites: {}
 }
@@ -1223,7 +1217,7 @@ export interface BarangMasukFieldRefs {
   readonly nomorDokumen: Prisma.FieldRef<"BarangMasuk", 'String'>
   readonly createdAt: Prisma.FieldRef<"BarangMasuk", 'DateTime'>
   readonly barangId: Prisma.FieldRef<"BarangMasuk", 'Int'>
-  readonly userId: Prisma.FieldRef<"BarangMasuk", 'Int'>
+  readonly userId: Prisma.FieldRef<"BarangMasuk", 'String'>
 }
     
 

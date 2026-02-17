@@ -29,13 +29,11 @@ export type AggregatePO = {
 export type POAvgAggregateOutputType = {
   id: number | null
   total: runtime.Decimal | null
-  userId: number | null
 }
 
 export type POSumAggregateOutputType = {
   id: number | null
   total: runtime.Decimal | null
-  userId: number | null
 }
 
 export type POMinAggregateOutputType = {
@@ -46,7 +44,7 @@ export type POMinAggregateOutputType = {
   status: $Enums.StatusPO | null
   total: runtime.Decimal | null
   createdAt: Date | null
-  userId: number | null
+  userId: string | null
 }
 
 export type POMaxAggregateOutputType = {
@@ -57,7 +55,7 @@ export type POMaxAggregateOutputType = {
   status: $Enums.StatusPO | null
   total: runtime.Decimal | null
   createdAt: Date | null
-  userId: number | null
+  userId: string | null
 }
 
 export type POCountAggregateOutputType = {
@@ -76,13 +74,11 @@ export type POCountAggregateOutputType = {
 export type POAvgAggregateInputType = {
   id?: true
   total?: true
-  userId?: true
 }
 
 export type POSumAggregateInputType = {
   id?: true
   total?: true
-  userId?: true
 }
 
 export type POMinAggregateInputType = {
@@ -213,7 +209,7 @@ export type POGroupByOutputType = {
   status: $Enums.StatusPO
   total: runtime.Decimal
   createdAt: Date
-  userId: number
+  userId: string
   _count: POCountAggregateOutputType | null
   _avg: POAvgAggregateOutputType | null
   _sum: POSumAggregateOutputType | null
@@ -247,7 +243,7 @@ export type POWhereInput = {
   status?: Prisma.EnumStatusPOFilter<"PO"> | $Enums.StatusPO
   total?: Prisma.DecimalFilter<"PO"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"PO"> | Date | string
-  userId?: Prisma.IntFilter<"PO"> | number
+  userId?: Prisma.StringFilter<"PO"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.POItemListRelationFilter
 }
@@ -276,7 +272,7 @@ export type POWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumStatusPOFilter<"PO"> | $Enums.StatusPO
   total?: Prisma.DecimalFilter<"PO"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"PO"> | Date | string
-  userId?: Prisma.IntFilter<"PO"> | number
+  userId?: Prisma.StringFilter<"PO"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.POItemListRelationFilter
 }, "id" | "nomorPO">
@@ -308,7 +304,7 @@ export type POScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumStatusPOWithAggregatesFilter<"PO"> | $Enums.StatusPO
   total?: Prisma.DecimalWithAggregatesFilter<"PO"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PO"> | Date | string
-  userId?: Prisma.IntWithAggregatesFilter<"PO"> | number
+  userId?: Prisma.StringWithAggregatesFilter<"PO"> | string
 }
 
 export type POCreateInput = {
@@ -330,7 +326,7 @@ export type POUncheckedCreateInput = {
   status?: $Enums.StatusPO
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
-  userId: number
+  userId: string
   items?: Prisma.POItemUncheckedCreateNestedManyWithoutPoInput
 }
 
@@ -353,7 +349,7 @@ export type POUncheckedUpdateInput = {
   status?: Prisma.EnumStatusPOFieldUpdateOperationsInput | $Enums.StatusPO
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   items?: Prisma.POItemUncheckedUpdateManyWithoutPoNestedInput
 }
 
@@ -365,7 +361,7 @@ export type POCreateManyInput = {
   status?: $Enums.StatusPO
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
-  userId: number
+  userId: string
 }
 
 export type POUpdateManyMutationInput = {
@@ -385,7 +381,7 @@ export type POUncheckedUpdateManyInput = {
   status?: Prisma.EnumStatusPOFieldUpdateOperationsInput | $Enums.StatusPO
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type POListRelationFilter = {
@@ -412,7 +408,6 @@ export type POCountOrderByAggregateInput = {
 export type POAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   total?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
 }
 
 export type POMaxOrderByAggregateInput = {
@@ -440,7 +435,6 @@ export type POMinOrderByAggregateInput = {
 export type POSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   total?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
 }
 
 export type POScalarRelationFilter = {
@@ -566,7 +560,7 @@ export type POScalarWhereInput = {
   status?: Prisma.EnumStatusPOFilter<"PO"> | $Enums.StatusPO
   total?: Prisma.DecimalFilter<"PO"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"PO"> | Date | string
-  userId?: Prisma.IntFilter<"PO"> | number
+  userId?: Prisma.StringFilter<"PO"> | string
 }
 
 export type POCreateWithoutItemsInput = {
@@ -587,7 +581,7 @@ export type POUncheckedCreateWithoutItemsInput = {
   status?: $Enums.StatusPO
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
-  userId: number
+  userId: string
 }
 
 export type POCreateOrConnectWithoutItemsInput = {
@@ -624,7 +618,7 @@ export type POUncheckedUpdateWithoutItemsInput = {
   status?: Prisma.EnumStatusPOFieldUpdateOperationsInput | $Enums.StatusPO
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type POCreateManyUserInput = {
@@ -775,7 +769,7 @@ export type $POPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
     status: $Enums.StatusPO
     total: runtime.Decimal
     createdAt: Date
-    userId: number
+    userId: string
   }, ExtArgs["result"]["pO"]>
   composites: {}
 }
@@ -1208,7 +1202,7 @@ export interface POFieldRefs {
   readonly status: Prisma.FieldRef<"PO", 'StatusPO'>
   readonly total: Prisma.FieldRef<"PO", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"PO", 'DateTime'>
-  readonly userId: Prisma.FieldRef<"PO", 'Int'>
+  readonly userId: Prisma.FieldRef<"PO", 'String'>
 }
     
 

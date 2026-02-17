@@ -29,13 +29,11 @@ export type AggregateInvoice = {
 export type InvoiceAvgAggregateOutputType = {
   id: number | null
   total: runtime.Decimal | null
-  userId: number | null
 }
 
 export type InvoiceSumAggregateOutputType = {
   id: number | null
   total: runtime.Decimal | null
-  userId: number | null
 }
 
 export type InvoiceMinAggregateOutputType = {
@@ -46,7 +44,7 @@ export type InvoiceMinAggregateOutputType = {
   total: runtime.Decimal | null
   status: $Enums.StatusInvoice | null
   createdAt: Date | null
-  userId: number | null
+  userId: string | null
 }
 
 export type InvoiceMaxAggregateOutputType = {
@@ -57,7 +55,7 @@ export type InvoiceMaxAggregateOutputType = {
   total: runtime.Decimal | null
   status: $Enums.StatusInvoice | null
   createdAt: Date | null
-  userId: number | null
+  userId: string | null
 }
 
 export type InvoiceCountAggregateOutputType = {
@@ -76,13 +74,11 @@ export type InvoiceCountAggregateOutputType = {
 export type InvoiceAvgAggregateInputType = {
   id?: true
   total?: true
-  userId?: true
 }
 
 export type InvoiceSumAggregateInputType = {
   id?: true
   total?: true
-  userId?: true
 }
 
 export type InvoiceMinAggregateInputType = {
@@ -213,7 +209,7 @@ export type InvoiceGroupByOutputType = {
   total: runtime.Decimal
   status: $Enums.StatusInvoice
   createdAt: Date
-  userId: number
+  userId: string
   _count: InvoiceCountAggregateOutputType | null
   _avg: InvoiceAvgAggregateOutputType | null
   _sum: InvoiceSumAggregateOutputType | null
@@ -247,7 +243,7 @@ export type InvoiceWhereInput = {
   total?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumStatusInvoiceFilter<"Invoice"> | $Enums.StatusInvoice
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
-  userId?: Prisma.IntFilter<"Invoice"> | number
+  userId?: Prisma.StringFilter<"Invoice"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.InvoiceItemListRelationFilter
   pengiriman?: Prisma.XOR<Prisma.PengirimanNullableScalarRelationFilter, Prisma.PengirimanWhereInput> | null
@@ -278,7 +274,7 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   total?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumStatusInvoiceFilter<"Invoice"> | $Enums.StatusInvoice
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
-  userId?: Prisma.IntFilter<"Invoice"> | number
+  userId?: Prisma.StringFilter<"Invoice"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.InvoiceItemListRelationFilter
   pengiriman?: Prisma.XOR<Prisma.PengirimanNullableScalarRelationFilter, Prisma.PengirimanWhereInput> | null
@@ -311,7 +307,7 @@ export type InvoiceScalarWhereWithAggregatesInput = {
   total?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumStatusInvoiceWithAggregatesFilter<"Invoice"> | $Enums.StatusInvoice
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Invoice"> | Date | string
-  userId?: Prisma.IntWithAggregatesFilter<"Invoice"> | number
+  userId?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
 }
 
 export type InvoiceCreateInput = {
@@ -334,7 +330,7 @@ export type InvoiceUncheckedCreateInput = {
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.StatusInvoice
   createdAt?: Date | string
-  userId: number
+  userId: string
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
   pengiriman?: Prisma.PengirimanUncheckedCreateNestedOneWithoutInvoiceInput
 }
@@ -359,7 +355,7 @@ export type InvoiceUncheckedUpdateInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumStatusInvoiceFieldUpdateOperationsInput | $Enums.StatusInvoice
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
   pengiriman?: Prisma.PengirimanUncheckedUpdateOneWithoutInvoiceNestedInput
 }
@@ -372,7 +368,7 @@ export type InvoiceCreateManyInput = {
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.StatusInvoice
   createdAt?: Date | string
-  userId: number
+  userId: string
 }
 
 export type InvoiceUpdateManyMutationInput = {
@@ -392,7 +388,7 @@ export type InvoiceUncheckedUpdateManyInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumStatusInvoiceFieldUpdateOperationsInput | $Enums.StatusInvoice
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type InvoiceListRelationFilter = {
@@ -419,7 +415,6 @@ export type InvoiceCountOrderByAggregateInput = {
 export type InvoiceAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   total?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
 }
 
 export type InvoiceMaxOrderByAggregateInput = {
@@ -447,7 +442,6 @@ export type InvoiceMinOrderByAggregateInput = {
 export type InvoiceSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   total?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
 }
 
 export type InvoiceScalarRelationFilter = {
@@ -589,7 +583,7 @@ export type InvoiceScalarWhereInput = {
   total?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumStatusInvoiceFilter<"Invoice"> | $Enums.StatusInvoice
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
-  userId?: Prisma.IntFilter<"Invoice"> | number
+  userId?: Prisma.StringFilter<"Invoice"> | string
 }
 
 export type InvoiceCreateWithoutItemsInput = {
@@ -611,7 +605,7 @@ export type InvoiceUncheckedCreateWithoutItemsInput = {
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.StatusInvoice
   createdAt?: Date | string
-  userId: number
+  userId: string
   pengiriman?: Prisma.PengirimanUncheckedCreateNestedOneWithoutInvoiceInput
 }
 
@@ -650,7 +644,7 @@ export type InvoiceUncheckedUpdateWithoutItemsInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumStatusInvoiceFieldUpdateOperationsInput | $Enums.StatusInvoice
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   pengiriman?: Prisma.PengirimanUncheckedUpdateOneWithoutInvoiceNestedInput
 }
 
@@ -673,7 +667,7 @@ export type InvoiceUncheckedCreateWithoutPengirimanInput = {
   total?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.StatusInvoice
   createdAt?: Date | string
-  userId: number
+  userId: string
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
 }
 
@@ -712,7 +706,7 @@ export type InvoiceUncheckedUpdateWithoutPengirimanInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumStatusInvoiceFieldUpdateOperationsInput | $Enums.StatusInvoice
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
 }
 
@@ -869,7 +863,7 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     total: runtime.Decimal
     status: $Enums.StatusInvoice
     createdAt: Date
-    userId: number
+    userId: string
   }, ExtArgs["result"]["invoice"]>
   composites: {}
 }
@@ -1303,7 +1297,7 @@ export interface InvoiceFieldRefs {
   readonly total: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly status: Prisma.FieldRef<"Invoice", 'StatusInvoice'>
   readonly createdAt: Prisma.FieldRef<"Invoice", 'DateTime'>
-  readonly userId: Prisma.FieldRef<"Invoice", 'Int'>
+  readonly userId: Prisma.FieldRef<"Invoice", 'String'>
 }
     
 
