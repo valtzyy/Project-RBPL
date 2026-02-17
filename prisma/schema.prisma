@@ -13,27 +13,24 @@ datasource db {
   provider = "postgresql"
 }
 
-
-
 model User {
-  id            String    @id @default(cuid()) // Ganti ke String CUID
+  id            String   @id @default(cuid()) // Ganti ke String CUID
   name          String
-  email         String    @unique
+  email         String   @unique
   emailVerified Boolean
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  role          Role      @default(ADMIN_GUDANG)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  role          Role     @default(ADMIN_GUDANG)
 
-  sessions      Session[]
-  accounts      Account[]
+  sessions Session[]
+  accounts Account[]
 
-  invoices      Invoice[]
-  pos           PO[]
-  barangMasuk   BarangMasuk[]
-  barangKeluar  BarangKeluar[]
-  
+  invoices     Invoice[]
+  pos          PO[]
+  barangMasuk  BarangMasuk[]
+  barangKeluar BarangKeluar[]
+
   @@map("user")
 }
 
@@ -47,10 +44,11 @@ model Session {
   createdAt DateTime
   updatedAt DateTime
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@map("session")
+  @@index([userId])
 }
 
 model Account {
@@ -63,17 +61,20 @@ model Account {
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
-  password              String?   // Password disimpan di sini
+  password              String? // Password disimpan di sini
   createdAt             DateTime
   updatedAt             DateTime
 
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  idToken String?
 
   @@map("account")
+  @@index([userId])
 }
 
 model Verification {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
@@ -81,6 +82,7 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+  @@index([identifier])
 }
 
 enum Role {
@@ -90,14 +92,14 @@ enum Role {
 }
 
 model Barang {
-  id          Int      @id @default(autoincrement())
-  kodeBarang  String   @unique
-  namaBarang  String
-  stok        Int      @default(0)
-  harga       Decimal  @db.Decimal(10, 2)
-  satuan      String   
-  deskripsi   String?
-  createdAt   DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  kodeBarang String   @unique
+  namaBarang String
+  stok       Int      @default(0)
+  harga      Decimal  @db.Decimal(10, 2)
+  satuan     String
+  deskripsi  String?
+  createdAt  DateTime @default(now())
 
   barangMasuk  BarangMasuk[]
   barangKeluar BarangKeluar[]
@@ -106,52 +108,54 @@ model Barang {
 }
 
 model BarangMasuk {
-  id            Int      @id @default(autoincrement())
-  tanggalMasuk  DateTime
-  jumlahMasuk   Int
-  supplier      String   // Nama Supplier
-  nomorDokumen  String?  // Surat Jalan
-  createdAt     DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  tanggalMasuk DateTime
+  jumlahMasuk  Int
+  supplier     String // Nama Supplier
+  nomorDokumen String? // Surat Jalan
+  createdAt    DateTime @default(now())
 
   // Relasi
-  barangId      Int
-  barang        Barang   @relation(fields: [barangId], references: [id])
-  userId        String      // Admin Gudang yang input
-  user          User     @relation(fields: [userId], references: [id])
+  barangId Int
+  barang   Barang @relation(fields: [barangId], references: [id])
+  userId   String // Admin Gudang yang input
+  user     User   @relation(fields: [userId], references: [id])
 }
 
 model BarangKeluar {
   id            Int      @id @default(autoincrement())
   tanggalKeluar DateTime
   jumlahKeluar  Int
-  tujuan        String   // Tujuan pengiriman internal/eksternal
+  tujuan        String // Tujuan pengiriman internal/eksternal
   nomorDokumen  String?
   createdAt     DateTime @default(now())
 
   // Relasi
-  barangId      Int
-  barang        Barang   @relation(fields: [barangId], references: [id])
-  userId        String      // Admin Gudang yang input
-  user          User     @relation(fields: [userId], references: [id])
+  barangId Int
+  barang   Barang @relation(fields: [barangId], references: [id])
+  userId   String // Admin Gudang yang input
+  user     User   @relation(fields: [userId], references: [id])
 }
 
 // Purchase Order 
+
 model PO {
-  id           Int       @id @default(autoincrement())
-  nomorPO      String    @unique
+  id           Int      @id @default(autoincrement())
+  nomorPO      String   @unique
   tanggal      DateTime
   supplierName String
-  status       StatusPO  @default(DRAFT)
-  total        Decimal   @default(0) @db.Decimal(15, 2)
-  createdAt    DateTime  @default(now())
+  status       StatusPO @default(DRAFT)
+  total        Decimal  @default(0) @db.Decimal(15, 2)
+  createdAt    DateTime @default(now())
 
   // Relasi
-  userId       String       // Admin Distributor yang buat
-  user         User      @relation(fields: [userId], references: [id])
-  items        POItem[]
+  userId String // Admin Distributor yang buat
+  user   User     @relation(fields: [userId], references: [id])
+  items  POItem[]
 }
 
 // Detail Barang dalam PO
+
 model POItem {
   id          Int     @id @default(autoincrement())
   qty         Int
@@ -159,30 +163,32 @@ model POItem {
   subtotal    Decimal @db.Decimal(15, 2)
 
   // Relasi
-  poId        Int
-  po          PO      @relation(fields: [poId], references: [id])
-  barangId    Int
-  barang      Barang  @relation(fields: [barangId], references: [id])
+  poId     Int
+  po       PO     @relation(fields: [poId], references: [id])
+  barangId Int
+  barang   Barang @relation(fields: [barangId], references: [id])
 }
 
 //Invoice untuk penjualan ke pelanggan/toko/mitra
+
 model Invoice {
   id           Int           @id @default(autoincrement())
   nomorInvoice String        @unique
   tanggal      DateTime
-  mitraName    String        // Toko Tujuan
+  mitraName    String // Toko Tujuan
   total        Decimal       @default(0) @db.Decimal(15, 2)
   status       StatusInvoice @default(DRAFT)
   createdAt    DateTime      @default(now())
 
   // Relasi
-  userId       String           // Admin Distributor yang buat
-  user         User          @relation(fields: [userId], references: [id])
-  items        InvoiceItem[]
-  pengiriman   Pengiriman?   // 1 Invoice punya 1 Pengiriman
+  userId     String // Admin Distributor yang buat
+  user       User          @relation(fields: [userId], references: [id])
+  items      InvoiceItem[]
+  pengiriman Pengiriman? // 1 Invoice punya 1 Pengiriman
 }
 
 // Detail Barang dalam Invoice
+
 model InvoiceItem {
   id          Int     @id @default(autoincrement())
   qty         Int
@@ -190,10 +196,10 @@ model InvoiceItem {
   subtotal    Decimal @db.Decimal(15, 2)
 
   // Relasi
-  invoiceId   Int
-  invoice     Invoice @relation(fields: [invoiceId], references: [id])
-  barangId    Int
-  barang      Barang  @relation(fields: [barangId], references: [id])
+  invoiceId Int
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  barangId  Int
+  barang    Barang  @relation(fields: [barangId], references: [id])
 }
 
 enum StatusPO {
@@ -211,6 +217,7 @@ enum StatusInvoice {
 }
 
 // Pengiriman untuk mengelola status pengiriman barang keluar
+
 model Pengiriman {
   id            Int              @id @default(autoincrement())
   nomorResi     String?
@@ -222,8 +229,8 @@ model Pengiriman {
   createdAt     DateTime         @default(now())
 
   // Relasi
-  invoiceId     Int              @unique
-  invoice       Invoice          @relation(fields: [invoiceId], references: [id])
+  invoiceId Int     @unique
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
 }
 
 enum StatusPengiriman {
