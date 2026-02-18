@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import BarangMasukUI from "@/components/dashboard/BarangMasukUI"; 
+import BarangMasukUI from "@/components/dashboard/BarangMasukUI";
 
 export default async function PageBarangMasuk() {
   const session = await auth.api.getSession({
@@ -12,18 +12,23 @@ export default async function PageBarangMasuk() {
 
   if (!session) redirect("/login");
 
-  // Ambil data Barang Masuk dari DB, include detail Barangnya
+  // 1. Ambil Data History Barang Masuk
   const rawData = await prisma.barangMasuk.findMany({
     orderBy: { tanggalMasuk: "desc" },
     include: {
-      barang: true, // Join ke tabel Barang untuk ambil Nama & Kode
+      barang: true,
     },
   });
 
-  // Format data agar aman dikirim ke Client Component (Date object ke String)
+  // 2. Ambil List Master Barang (Untuk Dropdown di Modal)
+  const masterBarang = await prisma.barang.findMany({
+    select: { id: true, namaBarang: true, kodeBarang: true },
+    orderBy: { namaBarang: "asc" },
+  });
+
   const dataBarangMasuk = rawData.map((item) => ({
     id: item.id,
-    tanggal: item.tanggalMasuk.toISOString().split("T")[0], // "2025-12-08"
+    tanggal: item.tanggalMasuk.toISOString().split("T")[0],
     kodeBarang: item.barang.kodeBarang,
     namaBarang: item.barang.namaBarang,
     jumlah: item.jumlahMasuk,
@@ -33,6 +38,7 @@ export default async function PageBarangMasuk() {
   return (
     <BarangMasukUI
       data={dataBarangMasuk}
+      listBarang={masterBarang} // <--- Kirim ini ke UI
       userName={session.user.name}
       userRole="Admin Gudang"
     />
