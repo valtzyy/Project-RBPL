@@ -61,7 +61,10 @@ export default function Sidebar() {
           <span>Barang Masuk</span>
         </div>
 
-        <div className={getMenuClass("/dashboard/gudang/barang-keluar")}>
+        <div
+          className={getMenuClass("/dashboard/gudang/barang-keluar")}
+          onClick={() => router.push("/dashboard/gudang/barang-keluar")}
+        >
           <Upload size={20} />
           <span>Barang Keluar</span>
         </div>

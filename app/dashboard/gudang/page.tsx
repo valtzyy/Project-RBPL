@@ -59,26 +59,42 @@ export default async function DashboardGudang() {
     ...masuk.map((m) => ({
       originalDate: m.tanggalMasuk,
       tipe: "Masuk",
-      nama: m.barang.namaBarang,
+      nama: m.barang.namaBarang,  
       jumlah: m.jumlahMasuk,
-      keterangan: m.supplier, // Supplier
+      keterangan: m.supplier,
     })),
     ...keluar.map((k) => ({
       originalDate: k.tanggalKeluar,
       tipe: "Keluar",
       nama: k.barang.namaBarang,
       jumlah: k.jumlahKeluar,
-      keterangan: k.tujuan, // Tujuan
+      keterangan: k.tujuan,
     })),
   ];
 
-  // Sort descending & ambil 5 teratas
+  // 1. Buat Helper Fungsi untuk Konversi ke WIB (GMT+7)
+  const formatWIB = (date: Date) => {
+    // Ubah ke string berdasarkan zona waktu Jakarta, lalu jadikan object Date lagi
+    const wibDate = new Date(
+      date.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }),
+    );
+
+    // Format manual agar hasil akhirnya konsisten "YYYY-MM-DD HH:mm"
+    const yyyy = wibDate.getFullYear();
+    const mm = String(wibDate.getMonth() + 1).padStart(2, "0");
+    const dd = String(wibDate.getDate()).padStart(2, "0");
+    const hh = String(wibDate.getHours()).padStart(2, "0");
+    const min = String(wibDate.getMinutes()).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+  };
+
+  // 2. Terapkan fungsi formatWIB ke dalam mapping
   const aktivitas = aktivitasRaw
     .sort((a, b) => b.originalDate.getTime() - a.originalDate.getTime())
     .slice(0, 5)
     .map((item) => ({
-      // Format tanggal jadi String: "2025-12-08 09:30"
-      tanggal: item.originalDate.toISOString().slice(0, 16).replace("T", " "),
+      tanggal: formatWIB(item.originalDate), // <--- UBAH DI SINI
       tipe: item.tipe,
       nama: item.nama,
       jumlah: item.jumlah,
