@@ -1,0 +1,139 @@
+// components/dashboard/ModalEditStatus.tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import { X, Loader2 } from "lucide-react";
+import { updateStatusTransaksi } from "@/app/actions/statusAction";
+
+interface TransactionItem {
+  id: number;
+  tipe: "Invoice" | "PO";
+  nomor: string;
+  status: string;
+}
+
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  dataTransaksi: TransactionItem | null;
+}
+
+export default function ModalEditStatus({
+  isOpen,
+  onClose,
+  dataTransaksi,
+}: ModalProps) {
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
+
+  // Set status awal di dropdown saat modal dibuka
+  useEffect(() => {
+    if (dataTransaksi) {
+      setStatus(dataTransaksi.status);
+    }
+  }, [dataTransaksi]);
+
+  if (!isOpen || !dataTransaksi) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    const result = await updateStatusTransaksi(
+      dataTransaksi.id,
+      dataTransaksi.tipe,
+      status,
+    );
+
+    if (result.error) {
+      setError(result.error);
+    } else {
+      onClose(); // Langsung tutup jika sukses
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl animate-in fade-in zoom-in duration-200">
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <h3 className="text-lg font-bold text-slate-800">
+            Ubah Status {dataTransaksi.tipe}
+          </h3>
+          <button
+            onClick={onClose}
+            className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <p className="text-sm text-slate-500 mb-1">Nomor Dokumen</p>
+            <p className="font-semibold text-slate-800">
+              {dataTransaksi.nomor}
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-slate-700">
+              Pilih Status Baru
+            </label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            >
+              {dataTransaksi.tipe === "Invoice" ? (
+                <>
+                  <option value="DRAFT">Pending (Draft)</option>
+                  <option value="ISSUED">Proses (Issued)</option>
+                  <option value="PAID">Lunas (Paid)</option>
+                  <option value="CANCELLED">Batal (Cancelled)</option>
+                </>
+              ) : (
+                <>
+                  <option value="DRAFT">Pending (Draft)</option>
+                  <option value="ORDERED">Proses (Ordered)</option>
+                  <option value="RECEIVED">Selesai (Received)</option>
+                  <option value="CANCELLED">Batal (Cancelled)</option>
+                </>
+              )}
+            </select>
+          </div>
+
+          {error && (
+            <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-100">
+              {error}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-70"
+            >
+              {loading ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                "Simpan Status"
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
