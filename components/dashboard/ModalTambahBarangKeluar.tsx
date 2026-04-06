@@ -1,19 +1,14 @@
-// components/dashboard/ModalTambahBarangKeluar.tsx
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { tambahBarangKeluar } from "@/app/actions/barangKeluarAction";
 
+// INI BAGIAN YANG MEMPERBAIKI ERROR TERSEBUT
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  listBarang: {
-    id: number;
-    namaBarang: string;
-    kodeBarang: string;
-    stok: number;
-  }[];
+  listBarang: { id: number; namaBarang: string; kodeBarang: string }[];
 }
 
 export default function ModalTambahBarangKeluar({
@@ -32,26 +27,27 @@ export default function ModalTambahBarangKeluar({
     setError("");
 
     const formData = new FormData(event.currentTarget);
-    const res = await tambahBarangKeluar(formData);
+    const result = await tambahBarangKeluar(formData);
 
-    if (res?.error) {
-      setError(res.error);
+    if (result.error) {
+      setError(result.error);
+      setLoading(false);
     } else {
-      onClose(); // Tutup modal jika sukses
+      setLoading(false);
+      onClose();
     }
-    setLoading(false);
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 transition-opacity backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-xl bg-white shadow-2xl animate-in fade-in zoom-in duration-200">
+      <div className="w-full max-w-md rounded-xl bg-white shadow-xl animate-in fade-in zoom-in duration-200">
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <h3 className="text-lg font-bold text-slate-800">
             Tambah Barang Keluar
           </h3>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600"
+            className="text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors p-2 rounded-full"
           >
             <X size={20} />
           </button>
@@ -66,15 +62,15 @@ export default function ModalTambahBarangKeluar({
               <select
                 name="barangId"
                 required
-                className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-blue-500 focus:outline-none"
                 defaultValue=""
+                className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="" disabled>
-                  Pilih Barang (Stok Tersedia)...
+                  Pilih Barang...
                 </option>
-                {listBarang.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.kodeBarang} - {item.namaBarang} (Stok: {item.stok})
+                {listBarang.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.kodeBarang} - {b.namaBarang}
                   </option>
                 ))}
               </select>
@@ -84,11 +80,6 @@ export default function ModalTambahBarangKeluar({
                 </svg>
               </div>
             </div>
-            {listBarang.length === 0 && (
-              <p className="text-xs text-red-500 mt-1">
-                Tidak ada barang dengan stok tersedia.
-              </p>
-            )}
           </div>
 
           <div className="space-y-1.5">
@@ -100,8 +91,8 @@ export default function ModalTambahBarangKeluar({
               type="number"
               min="1"
               required
-              placeholder="Masukkan jumlah"
-              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              placeholder="Masukkan jumlah pengeluaran"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
@@ -113,31 +104,35 @@ export default function ModalTambahBarangKeluar({
               name="tujuan"
               type="text"
               required
-              placeholder="Contoh: Cabang Jakarta / Toko A"
-              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              placeholder="Masukkan tujuan (mis: Toko A)"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
           {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 border border-red-100">
               {error}
             </div>
           )}
 
-          <div className="flex items-center gap-3 pt-4">
+          <div className="flex items-center gap-3 pt-4 border-t border-slate-100 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-lg border border-slate-300 bg-white py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="flex-1 rounded-lg border border-slate-300 bg-white py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 rounded-lg bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-70"
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors disabled:opacity-70"
             >
-              {loading ? "Menyimpan..." : "Simpan"}
+              {loading ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                "Simpan"
+              )}
             </button>
           </div>
         </form>

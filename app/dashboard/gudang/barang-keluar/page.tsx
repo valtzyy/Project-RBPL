@@ -28,6 +28,7 @@ export default async function PageBarangKeluar() {
   // Format Data
   const formattedData = historyData.map((item) => ({
     id: item.id,
+    barangId: item.barangId,
     tanggal: item.tanggalKeluar.toISOString().split("T")[0],
     kodeBarang: item.barang.kodeBarang,
     namaBarang: item.barang.namaBarang,

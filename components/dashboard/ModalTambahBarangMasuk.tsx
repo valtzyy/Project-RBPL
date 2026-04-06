@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { tambahBarangMasuk } from "@/app/actions/barangMasukAction";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  listBarang: { id: number; namaBarang: string; kodeBarang: string }[]; // Data untuk dropdown
+  listBarang: { id: number; namaBarang: string; kodeBarang: string }[];
 }
 
 export default function ModalTambahBarangMasuk({
@@ -33,13 +33,12 @@ export default function ModalTambahBarangMasuk({
       setLoading(false);
     } else {
       setLoading(false);
-      onClose(); // Tutup modal jika sukses
-      // Opsional: Tampilkan notifikasi sukses / Toast
+      onClose();
     }
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 transition-opacity">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 transition-opacity backdrop-blur-sm">
       <div className="w-full max-w-md rounded-xl bg-white shadow-xl animate-in fade-in zoom-in duration-200">
         {/* Header Modal */}
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
@@ -48,7 +47,7 @@ export default function ModalTambahBarangMasuk({
           </h3>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
+            className="text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors p-2 rounded-full"
           >
             <X size={20} />
           </button>
@@ -56,7 +55,6 @@ export default function ModalTambahBarangMasuk({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Input Nama Barang (Dropdown Select agar sesuai Schema Relation) */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-700">
               Nama Barang
@@ -65,9 +63,10 @@ export default function ModalTambahBarangMasuk({
               <select
                 name="barangId"
                 required
+                defaultValue="" // <-- Perbaikan React di sini
                 className="w-full appearance-none rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                <option value="" disabled selected>
+                <option value="" disabled>
                   Pilih Barang...
                 </option>
                 {listBarang.map((b) => (
@@ -87,7 +86,6 @@ export default function ModalTambahBarangMasuk({
             </p>
           </div>
 
-          {/* Input Jumlah */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-700">Jumlah</label>
             <input
@@ -100,7 +98,6 @@ export default function ModalTambahBarangMasuk({
             />
           </div>
 
-          {/* Input Supplier */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-700">
               Supplier
@@ -114,15 +111,13 @@ export default function ModalTambahBarangMasuk({
             />
           </div>
 
-          {/* Error Message */}
           {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 border border-red-100">
               {error}
             </div>
           )}
 
-          {/* Buttons */}
-          <div className="flex items-center gap-3 pt-4">
+          <div className="flex items-center gap-3 pt-4 border-t border-slate-100 mt-6">
             <button
               type="button"
               onClick={onClose}
@@ -133,9 +128,13 @@ export default function ModalTambahBarangMasuk({
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 rounded-lg bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors disabled:opacity-70"
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-blue-600 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors disabled:opacity-70"
             >
-              {loading ? "Menyimpan..." : "Simpan"}
+              {loading ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                "Simpan"
+              )}
             </button>
           </div>
         </form>

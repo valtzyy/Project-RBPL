@@ -28,6 +28,7 @@ export default async function PageBarangMasuk() {
 
   const dataBarangMasuk = rawData.map((item) => ({
     id: item.id,
+    barangId: item.barangId,
     tanggal: item.tanggalMasuk.toISOString().split("T")[0],
     kodeBarang: item.barang.kodeBarang,
     namaBarang: item.barang.namaBarang,
