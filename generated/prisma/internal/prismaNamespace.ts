@@ -395,7 +395,8 @@ export const ModelName = {
   POItem: 'POItem',
   Invoice: 'Invoice',
   InvoiceItem: 'InvoiceItem',
-  Pengiriman: 'Pengiriman'
+  Pengiriman: 'Pengiriman',
+  Laporan: 'Laporan'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "barang" | "barangMasuk" | "barangKeluar" | "pO" | "pOItem" | "invoice" | "invoiceItem" | "pengiriman"
+    modelProps: "user" | "session" | "account" | "verification" | "barang" | "barangMasuk" | "barangKeluar" | "pO" | "pOItem" | "invoice" | "invoiceItem" | "pengiriman" | "laporan"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1303,6 +1304,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Laporan: {
+      payload: Prisma.$LaporanPayload<ExtArgs>
+      fields: Prisma.LaporanFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LaporanFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LaporanFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload>
+        }
+        findFirst: {
+          args: Prisma.LaporanFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LaporanFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload>
+        }
+        findMany: {
+          args: Prisma.LaporanFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload>[]
+        }
+        create: {
+          args: Prisma.LaporanCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload>
+        }
+        createMany: {
+          args: Prisma.LaporanCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LaporanCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload>[]
+        }
+        delete: {
+          args: Prisma.LaporanDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload>
+        }
+        update: {
+          args: Prisma.LaporanUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload>
+        }
+        deleteMany: {
+          args: Prisma.LaporanDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LaporanUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LaporanUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload>[]
+        }
+        upsert: {
+          args: Prisma.LaporanUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LaporanPayload>
+        }
+        aggregate: {
+          args: Prisma.LaporanAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLaporan>
+        }
+        groupBy: {
+          args: Prisma.LaporanGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LaporanGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LaporanCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LaporanCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1382,7 +1457,8 @@ export const AccountScalarFieldEnum = {
   scope: 'scope',
   password: 'password',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  idToken: 'idToken'
 } as const
 
 export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
@@ -1507,6 +1583,19 @@ export const PengirimanScalarFieldEnum = {
 } as const
 
 export type PengirimanScalarFieldEnum = (typeof PengirimanScalarFieldEnum)[keyof typeof PengirimanScalarFieldEnum]
+
+
+export const LaporanScalarFieldEnum = {
+  id: 'id',
+  idLaporan: 'idLaporan',
+  periodeMulai: 'periodeMulai',
+  periodeSelesai: 'periodeSelesai',
+  totalPenjualan: 'totalPenjualan',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type LaporanScalarFieldEnum = (typeof LaporanScalarFieldEnum)[keyof typeof LaporanScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1778,6 +1867,7 @@ export type GlobalOmitConfig = {
   invoice?: Prisma.InvoiceOmit
   invoiceItem?: Prisma.InvoiceItemOmit
   pengiriman?: Prisma.PengirimanOmit
+  laporan?: Prisma.LaporanOmit
 }
 
 /* Types for Logging */

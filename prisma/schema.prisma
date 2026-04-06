@@ -30,6 +30,7 @@ model User {
   pos          PO[]
   barangMasuk  BarangMasuk[]
   barangKeluar BarangKeluar[]
+  laporan       Laporan[]
 
   @@map("user")
 }
@@ -232,7 +233,16 @@ model Pengiriman {
   invoiceId Int     @unique
   invoice   Invoice @relation(fields: [invoiceId], references: [id])
 }
-
+model Laporan {
+  id              Int      @id @default(autoincrement())
+  idLaporan       String   @unique
+  periodeMulai    DateTime
+  periodeSelesai  DateTime
+  totalPenjualan  Decimal  @db.Decimal(15, 2)
+  userId          String   // Menyimpan ID Admin yang membuat laporan
+  createdAt       DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+}
 enum StatusPengiriman {
   DIPROSES
   DIKIRIM

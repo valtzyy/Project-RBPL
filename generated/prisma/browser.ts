@@ -77,3 +77,8 @@ export type InvoiceItem = Prisma.InvoiceItemModel
  * 
  */
 export type Pengiriman = Prisma.PengirimanModel
+/**
+ * Model Laporan
+ * 
+ */
+export type Laporan = Prisma.LaporanModel
