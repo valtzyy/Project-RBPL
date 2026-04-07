@@ -45,5 +45,36 @@ Pastikan komputermu sudah ter-install:
 
 ### 1. Kloning Repository
 ```bash
-git clone [https://github.com/USERNAME_GITHUB_KAMU/smdg-app.git](https://github.com/USERNAME_GITHUB_KAMU/smdg-app.git)
-cd smdg-app
+git clone [https://github.com/valtzyy/Project-RBPL.git](https://github.com/valtzyy/Project-RBPL.git)
+cd Project-RBPL
+```
+
+### 2. Install Depedency
+```bash
+npm install
+```
+
+### 3. Konfigurasi Environment Variabel
+buat file baru bernama .env di root folder dan isi dengan template sepert ini
+```bash
+# URL Koneksi Database PostgreSQL (Contoh menggunakan Prisma Postgres/Neon)
+DATABASE_URL="postgresql://user:password@host:port/dbname?sslmode=require"
+
+# Konfigurasi Better Auth
+BETTER_AUTH_SECRET="buat_kunci_rahasia_yang_panjang_dan_acak_di_sini"
+BETTER_AUTH_URL="http://localhost:3000" # Gunakan localhost untuk pengembangan lokal
+```
+### 4. Sinkronisasi Database
+Kirim struktur tabel (skema) aplikasi ke dalam database:
+```bash
+npm prisma db push
+```
+(Opsional) Jika ingin melihat atau mengelola isi database langsung via UI browser:
+```bash
+npx prisma studio
+```
+### 5. Jalankan Aplikasi
+```bash
+npm run dev
+```
+Buka http://localhost:3000 di browsermu untuk melihat hasilnya.
