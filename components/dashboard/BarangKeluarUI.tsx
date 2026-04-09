@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { Menu, Bell, User, Plus, Pencil, Trash2 } from "lucide-react";
-import SidebarGudang from "@/components/sidebar"; // Pastikan path sidebar kamu benar
+import SidebarGudang from "@/components/sidebar";
 import ModalTambahBarangKeluar from "./ModalTambahBarangKeluar";
-import ModalEditBarangKeluar from "./ModalEditBarangKeluar"; // Import Modal Edit
-import { hapusBarangKeluar } from "@/app/actions/barangKeluarAction"; // Import Server Action Hapus
+import ModalEditBarangKeluar from "./ModalEditBarangKeluar";
+import { hapusBarangKeluar } from "@/app/actions/barangKeluarAction";
 
 interface BarangKeluarItem {
   id: number;
-  barangId: number; // WAJIB ADA agar edit tau id barangnya
+  barangId: number;
   tanggal: string;
   kodeBarang: string;
   namaBarang: string;
@@ -19,7 +19,12 @@ interface BarangKeluarItem {
 
 interface Props {
   data: BarangKeluarItem[];
-  listBarang: { id: number; namaBarang: string; kodeBarang: string }[];
+  listBarang: {
+    id: number;
+    namaBarang: string;
+    kodeBarang: string;
+    stok: number;
+  }[];
   userName: string;
   userRole: string;
 }
@@ -33,14 +38,12 @@ export default function BarangKeluarUI({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // State Edit & Hapus
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<BarangKeluarItem | null>(
     null,
   );
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
-  // FUNGSI HAPUS
   const handleDelete = async (id: number) => {
     const confirmDelete = window.confirm(
       "Yakin ingin membatalkan barang keluar ini? Stok di gudang akan otomatis dikembalikan.",
@@ -150,7 +153,6 @@ export default function BarangKeluarUI({
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-center gap-2">
-                            {/* TOMBOL EDIT */}
                             <button
                               onClick={() => {
                                 setSelectedItem(item);
@@ -162,11 +164,10 @@ export default function BarangKeluarUI({
                               <Pencil size={16} />
                             </button>
 
-                            {/* TOMBOL HAPUS */}
                             <button
                               onClick={() => handleDelete(item.id)}
                               disabled={isDeleting === item.id}
-                              className={`rounded p-1.5 text-red-600 hover:bg-red-50 transition-colors ${isDeleting === item.id ? "opacity-50" : ""}`}
+                              className={`rounded p-1.5 text-red-600 hover:bg-red-50 transition-colors ${isDeleting === item.id ? "opacity-50 cursor-not-allowed" : ""}`}
                               title="Hapus Data"
                             >
                               <Trash2
@@ -203,7 +204,6 @@ export default function BarangKeluarUI({
         listBarang={listBarang}
       />
 
-      {/* MODAL EDIT */}
       <ModalEditBarangKeluar
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}

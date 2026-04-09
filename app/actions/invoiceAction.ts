@@ -1,6 +1,6 @@
 "use server";
 
-import prisma  from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -12,7 +12,6 @@ interface InvoiceData {
 }
 
 export async function buatInvoice(data: InvoiceData) {
-  // 1. Cek Autentikasi
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -25,7 +24,6 @@ export async function buatInvoice(data: InvoiceData) {
 
   try {
     await prisma.$transaction(async (tx) => {
-      // 2. Generate Nomor Invoice (Contoh: INV-20260327-001)
       const count = await tx.invoice.count();
       const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
       const nomorInvoice = `INV-${dateStr}-${String(count + 1).padStart(3, "0")}`;
@@ -33,7 +31,6 @@ export async function buatInvoice(data: InvoiceData) {
       let totalInvoice = 0;
       const invoiceItems = [];
 
-      // 3. Kalkulasi harga untuk setiap item yang dipilih
       for (const item of data.items) {
         const barang = await tx.barang.findUnique({
           where: { id: item.barangId },
@@ -54,14 +51,13 @@ export async function buatInvoice(data: InvoiceData) {
         });
       }
 
-      // 4. Buat Record Invoice beserta Relasi Items-nya
       await tx.invoice.create({
         data: {
           nomorInvoice: nomorInvoice,
           tanggal: new Date(data.tanggal),
           mitraName: data.mitraName,
           total: totalInvoice,
-          status: "ISSUED", // Status awal saat invoice dibuat
+          status: "ISSUED",
           userId: session.user.id,
           items: {
             create: invoiceItems,
@@ -70,11 +66,30 @@ export async function buatInvoice(data: InvoiceData) {
       });
     });
 
-    // 5. Refresh data di halaman UI
     revalidatePath("/dashboard/distributor/invoice");
     return { success: true };
   } catch (error: any) {
     console.error("Gagal buat invoice:", error);
     return { error: error.message || "Terjadi kesalahan sistem" };
+  }
+}
+
+// ==========================================
+// FUNGSI HAPUS INVOICE
+// ==========================================
+export async function hapusInvoice(id: number) {
+  try {
+    await prisma.$transaction([
+      // Hapus item-item di dalam Invoice terlebih dahulu
+      prisma.invoiceItem.deleteMany({ where: { invoiceId: id } }),
+      // Baru hapus Invoice utamanya
+      prisma.invoice.delete({ where: { id } }),
+    ]);
+
+    revalidatePath("/dashboard/distributor/invoice");
+    return { success: true };
+  } catch (error) {
+    console.error("Gagal hapus Invoice:", error);
+    return { error: "Gagal menghapus data Invoice" };
   }
 }

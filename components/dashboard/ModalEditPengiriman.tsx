@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { X, Loader2 } from "lucide-react";
+// Pastikan nama file action-nya sesuai dengan yang kita buat sebelumnya
 import { updateStatusPengiriman } from "@/app/actions/PengirimanAction";
 
+// 1. INTERFACE SUDAH DISAMAKAN DENGAN PENGIRIMAN_UI
 interface PengirimanItem {
-  id_db: number;
-  id_pengiriman: string;
+  id: number;
   nomorInvoice: string;
   tujuan: string;
   kurir: string;
+  resi: string;
   status: string;
 }
 
@@ -32,9 +34,11 @@ export default function ModalEditPengiriman({
     if (dataPengiriman) {
       // Mapping dari text UI ke nilai ENUM database jika diperlukan
       let dbStatus = "DIPROSES";
-      if (dataPengiriman.status === "Dikirim") dbStatus = "DIKIRIM";
-      if (dataPengiriman.status === "Selesai") dbStatus = "SELESAI";
-      if (dataPengiriman.status === "Dibatalkan") dbStatus = "DIBATALKAN";
+      const currentStatus = dataPengiriman.status.toUpperCase();
+
+      if (currentStatus === "DIKIRIM") dbStatus = "DIKIRIM";
+      if (currentStatus === "SELESAI") dbStatus = "SELESAI";
+      if (currentStatus === "DIBATALKAN") dbStatus = "DIBATALKAN";
 
       setStatus(dbStatus);
     }
@@ -47,9 +51,10 @@ export default function ModalEditPengiriman({
     setLoading(true);
     setError("");
 
-    const result = await updateStatusPengiriman(dataPengiriman.id_db, status);
+    // 2. PERBAIKAN DI SINI: Menggunakan dataPengiriman.id (bukan id_db)
+    const result = await updateStatusPengiriman(dataPengiriman.id, status);
 
-    if (result.error) {
+    if (result?.error) {
       setError(result.error);
     } else {
       onClose();
@@ -73,16 +78,17 @@ export default function ModalEditPengiriman({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4 mb-2">
+          <div className="grid grid-cols-2 gap-4 mb-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
             <div>
-              <p className="text-xs text-slate-500">ID Pengiriman</p>
+              {/* 3. PERBAIKAN UI: Menampilkan Nomor Resi, bukan ID database */}
+              <p className="text-xs text-slate-500">Nomor Resi</p>
               <p className="font-semibold text-slate-800">
-                {dataPengiriman.id_pengiriman}
+                {dataPengiriman.resi || "-"}
               </p>
             </div>
             <div>
               <p className="text-xs text-slate-500">Nomor Invoice</p>
-              <p className="font-semibold text-slate-800">
+              <p className="font-semibold text-slate-800 truncate">
                 {dataPengiriman.nomorInvoice}
               </p>
             </div>
@@ -97,9 +103,9 @@ export default function ModalEditPengiriman({
               onChange={(e) => setStatus(e.target.value)}
               className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             >
-              <option value="DIPROSES">Diproses</option>
-              <option value="DIKIRIM">Dikirim</option>
-              <option value="SELESAI">Selesai</option>
+              <option value="DIPROSES">Diproses (Persiapan Barang)</option>
+              <option value="DIKIRIM">Dikirim (Dalam Perjalanan)</option>
+              <option value="SELESAI">Selesai (Diterima Mitra)</option>
               <option value="DIBATALKAN">Dibatalkan</option>
             </select>
           </div>
@@ -110,7 +116,7 @@ export default function ModalEditPengiriman({
             </div>
           )}
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
             <button
               type="button"
               onClick={onClose}

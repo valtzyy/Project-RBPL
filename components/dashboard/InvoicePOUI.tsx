@@ -5,9 +5,13 @@ import { Bell, User, Plus, Pencil, Trash2, Eye, LogOut } from "lucide-react";
 import SidebarDistributor from "@/components/SidebarDistributor";
 import ModalTambahInvoice from "./ModalTambahInvoice";
 import ModalEditStatus from "./ModalEditStatus";
-import ModalTambahPO from "./ModalTambahPO"; 
+import ModalTambahPO from "./ModalTambahPO";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+
+// IMPORT FUNGSI DARI 2 FILE ACTION YANG BERBEDA
+import { hapusInvoice } from "@/app/actions/invoiceAction";
+import { hapusPO } from "@/app/actions/POAction";
 
 interface TransactionItem {
   id: number;
@@ -21,7 +25,6 @@ interface TransactionItem {
 
 interface Props {
   data: TransactionItem[];
-  // Tambahkan listBarang agar bisa dikirim ke Modal
   listBarang: {
     id: number;
     namaBarang: string;
@@ -39,25 +42,54 @@ export default function InvoicePOUI({
   userRole,
 }: Props) {
   const router = useRouter();
-  // State untuk mengontrol modal Buat Invoice dan PO
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalPOOpen, setIsModalPOOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<TransactionItem | null>(
     null,
   );
+
+  // State Loading untuk tombol hapus
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
   const handleLogout = async () => {
     await authClient.signOut();
     router.push("/login");
   };
 
-  // Helper Style untuk Badge Tipe (Invoice/PO)
+  // FUNGSI UNTUK MENGHAPUS DATA
+  const handleDelete = async (
+    id: number,
+    tipe: "Invoice" | "PO",
+    nomor: string,
+  ) => {
+    const confirmDelete = window.confirm(
+      `Apakah Anda yakin ingin menghapus ${tipe} (${nomor}) ini secara permanen?`,
+    );
+
+    if (confirmDelete) {
+      setIsDeleting(`${tipe}-${id}`);
+
+      let result;
+      // Gunakan percabangan untuk memanggil Action yang tepat
+      if (tipe === "Invoice") {
+        result = await hapusInvoice(id);
+      } else {
+        result = await hapusPO(id);
+      }
+
+      if (result?.error) {
+        alert(result.error);
+      }
+      setIsDeleting(null);
+    }
+  };
+
   const getTipeBadge = (tipe: string) => {
     if (tipe === "Invoice") return "bg-blue-50 text-blue-600 ring-blue-500/20";
     return "bg-purple-50 text-purple-600 ring-purple-500/20";
   };
 
-  // Helper Style untuk Badge Status
   const getStatusBadge = (status: string) => {
     if (status === "PAID" || status === "RECEIVED")
       return "bg-green-50 text-green-700 ring-green-600/20";
@@ -129,7 +161,6 @@ export default function InvoicePOUI({
             </div>
 
             <div className="flex gap-3">
-              {/* Tombol Buat Invoice - SEKARANG MEMBUKA MODAL */}
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-md hover:bg-blue-700 transition-all"
@@ -212,19 +243,32 @@ export default function InvoicePOUI({
                             </button>
                             <button
                               onClick={() => {
-                                setSelectedItem(item); // Simpan data baris yang diklik
-                                setIsEditModalOpen(true); // Buka modal
+                                setSelectedItem(item);
+                                setIsEditModalOpen(true);
                               }}
                               className="rounded p-1.5 text-green-600 hover:bg-green-50 transition-colors"
-                              title="Edit"
+                              title="Edit Status"
                             >
                               <Pencil size={16} />
                             </button>
                             <button
-                              className="rounded p-1.5 text-red-600 hover:bg-red-50 transition-colors"
+                              onClick={() =>
+                                handleDelete(item.id, item.tipe, item.nomor)
+                              }
+                              disabled={
+                                isDeleting === `${item.tipe}-${item.id}`
+                              }
+                              className={`rounded p-1.5 text-red-600 hover:bg-red-50 transition-colors ${isDeleting === `${item.tipe}-${item.id}` ? "opacity-50 cursor-not-allowed" : ""}`}
                               title="Hapus"
                             >
-                              <Trash2 size={16} />
+                              <Trash2
+                                size={16}
+                                className={
+                                  isDeleting === `${item.tipe}-${item.id}`
+                                    ? "animate-pulse"
+                                    : ""
+                                }
+                              />
                             </button>
                           </div>
                         </td>
@@ -247,14 +291,12 @@ export default function InvoicePOUI({
         </div>
       </main>
 
-      {/* Render Modal Tambah Invoice */}
       <ModalTambahInvoice
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         listBarang={listBarang}
       />
 
-      {/* Render Modal Tambah PO */}
       <ModalTambahPO
         isOpen={isModalPOOpen}
         onClose={() => setIsModalPOOpen(false)}

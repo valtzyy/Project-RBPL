@@ -1,7 +1,6 @@
-// app/actions/poAction.ts
 "use server";
 
-import  prisma  from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -13,7 +12,6 @@ interface POData {
 }
 
 export async function buatPO(data: POData) {
-  // 1. Cek Sesi Login
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -26,7 +24,6 @@ export async function buatPO(data: POData) {
 
   try {
     await prisma.$transaction(async (tx) => {
-      // 2. Generate Nomor PO Otomatis (Contoh: PO-20260327-001)
       const count = await tx.pO.count();
       const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
       const nomorPO = `PO-${dateStr}-${String(count + 1).padStart(3, "0")}`;
@@ -34,7 +31,6 @@ export async function buatPO(data: POData) {
       let totalPO = 0;
       const poItems = [];
 
-      // 3. Kalkulasi harga dan persiapkan data item
       for (const item of data.items) {
         const barang = await tx.barang.findUnique({
           where: { id: item.barangId },
@@ -43,7 +39,6 @@ export async function buatPO(data: POData) {
         if (!barang)
           throw new Error(`Barang dengan ID ${item.barangId} tidak ditemukan.`);
 
-        // Harga yang disepakati dengan supplier (menggunakan harga master sementara)
         const hargaSatuan = Number(barang.harga);
         const subtotal = hargaSatuan * item.qty;
         totalPO += subtotal;
@@ -56,14 +51,13 @@ export async function buatPO(data: POData) {
         });
       }
 
-      // 4. Simpan Data PO ke Database beserta Item-nya
       await tx.pO.create({
         data: {
           nomorPO: nomorPO,
           tanggal: new Date(data.tanggal),
           supplierName: data.supplierName,
           total: totalPO,
-          status: "ORDERED", // Status pesanan dikirim ke supplier
+          status: "ORDERED",
           userId: session.user.id,
           items: {
             create: poItems,
@@ -72,11 +66,30 @@ export async function buatPO(data: POData) {
       });
     });
 
-    // 5. Refresh Halaman UI agar tabel ter-update
     revalidatePath("/dashboard/distributor/invoice");
     return { success: true };
   } catch (error: any) {
     console.error("Gagal buat PO:", error);
     return { error: error.message || "Terjadi kesalahan sistem" };
+  }
+}
+
+// ==========================================
+// FUNGSI HAPUS PO
+// ==========================================
+export async function hapusPO(id: number) {
+  try {
+    await prisma.$transaction([
+      // Hapus item-item di dalam PO terlebih dahulu
+      prisma.pOItem.deleteMany({ where: { poId: id } }),
+      // Baru hapus PO utamanya
+      prisma.pO.delete({ where: { id } }),
+    ]);
+
+    revalidatePath("/dashboard/distributor/invoice");
+    return { success: true };
+  } catch (error) {
+    console.error("Gagal hapus PO:", error);
+    return { error: "Gagal menghapus data Purchase Order" };
   }
 }

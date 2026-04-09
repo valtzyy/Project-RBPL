@@ -1,5 +1,5 @@
 // app/dashboard/gudang/barang-keluar/page.tsx
-import  prisma  from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -18,14 +18,15 @@ export default async function PageBarangKeluar() {
     include: { barang: true },
   });
 
-  // 2. Ambil Master Barang untuk opsi Dropdown (Hanya yang stoknya > 0)
+  // 2. Ambil Master Barang untuk opsi Dropdown
+  // KITA HAPUS FILTER 'where: {stok: {gt: 0}}'
+  // Agar barang yang habis tetap muncul di modal dengan status disabled dan teks "(Habis)"
   const masterBarang = await prisma.barang.findMany({
-    where: { stok: { gt: 0 } }, // Hanya tampilkan barang yang ada stoknya
     select: { id: true, namaBarang: true, kodeBarang: true, stok: true },
     orderBy: { namaBarang: "asc" },
   });
 
-  // Format Data
+  // 3. Format Data untuk Tabel UI
   const formattedData = historyData.map((item) => ({
     id: item.id,
     barangId: item.barangId,

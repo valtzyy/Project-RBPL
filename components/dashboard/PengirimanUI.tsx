@@ -1,43 +1,60 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, User, LogOut, ExternalLink } from "lucide-react";
+import { Bell, User, LogOut, ExternalLink, Plus } from "lucide-react"; // Tambahkan icon Plus
 import SidebarDistributor from "@/components/SidebarDistributor";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import ModalEditPengiriman from "./ModalEditPengiriman";
 
+// 1. IMPORT MODAL TAMBAH PENGIRIMAN
+import ModalTambahPengiriman from "./ModalTambahPengiriman";
+
 interface PengirimanItem {
-  id_db: number;
-  id_pengiriman: string;
+  id: number;
   nomorInvoice: string;
   tujuan: string;
   kurir: string;
+  resi: string;
   status: string;
 }
 
 interface Props {
   data: PengirimanItem[];
+  // 2. TAMBAHKAN availableInvoices UNTUK MODAL
+  availableInvoices: { id: number; nomorInvoice: string; mitraName: string }[];
   userName: string;
   userRole: string;
 }
 
-export default function PengirimanUI({ data, userName, userRole }: Props) {
+export default function PengirimanUI({
+  data,
+  availableInvoices,
+  userName,
+  userRole,
+}: Props) {
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // State untuk modal edit
+  const [isModalEditOpen, setIsModalEditOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PengirimanItem | null>(null);
+
+  // 3. STATE UNTUK MODAL TAMBAH BARU
+  const [isModalTambahOpen, setIsModalTambahOpen] = useState(false);
 
   const handleLogout = async () => {
     await authClient.signOut();
     router.push("/login");
   };
 
-  // Helper Badge Status persis seperti desain
+  // Helper Badge Status
   const getStatusBadge = (status: string) => {
-    if (status === "Selesai") return "bg-green-100 text-green-700";
-    if (status === "Diproses") return "bg-yellow-100 text-yellow-700";
-    if (status === "Dikirim") return "bg-blue-100 text-blue-700";
-    if (status === "Dibatalkan") return "bg-red-100 text-red-700";
+    // Sesuaikan dengan enum Prisma kamu (DIPROSES, DIKIRIM, SELESAI, DIBATALKAN)
+    const normalizedStatus = status.toUpperCase();
+    if (normalizedStatus === "SELESAI") return "bg-green-100 text-green-700";
+    if (normalizedStatus === "DIPROSES") return "bg-yellow-100 text-yellow-700";
+    if (normalizedStatus === "DIKIRIM") return "bg-blue-100 text-blue-700";
+    if (normalizedStatus === "DIBATALKAN") return "bg-red-100 text-red-700";
     return "bg-slate-100 text-slate-700";
   };
 
@@ -82,13 +99,25 @@ export default function PengirimanUI({ data, userName, userRole }: Props) {
 
         {/* CONTENT */}
         <div className="p-8">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-slate-800">
-              Status Pengiriman
-            </h1>
-            <p className="text-slate-500 mt-1">
-              Kelola dan update status pengiriman
-            </p>
+          {/* 4. PERBAIKI BAGIAN INI UNTUK MENAMPILKAN TOMBOL */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-800">
+                Status Pengiriman
+              </h1>
+              <p className="text-slate-500 mt-1">
+                Kelola dan update status pengiriman
+              </p>
+            </div>
+
+            {/* TOMBOL TAMBAH PENGIRIMAN */}
+            <button
+              onClick={() => setIsModalTambahOpen(true)}
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-md hover:bg-blue-700 transition-all"
+            >
+              <Plus size={18} />
+              Buat Pengiriman
+            </button>
           </div>
 
           <div className="rounded-xl bg-white shadow-sm border border-slate-100 overflow-hidden">
@@ -96,7 +125,8 @@ export default function PengirimanUI({ data, userName, userRole }: Props) {
               <table className="w-full text-left text-sm">
                 <thead className="bg-white border-b border-slate-100 text-slate-700">
                   <tr>
-                    <th className="px-6 py-4 font-bold">ID Pengiriman</th>
+                    {/* Hapus ID Pengiriman jika tidak digunakan di database */}
+                    {/* <th className="px-6 py-4 font-bold">ID Pengiriman</th> */}
                     <th className="px-6 py-4 font-bold">Nomor Invoice</th>
                     <th className="px-6 py-4 font-bold">Tujuan</th>
                     <th className="px-6 py-4 font-bold">Kurir</th>
@@ -111,26 +141,19 @@ export default function PengirimanUI({ data, userName, userRole }: Props) {
                         key={index}
                         className="hover:bg-slate-50/50 transition-colors"
                       >
-                        <td className="px-6 py-5 text-slate-700">
-                          {item.id_pengiriman}
-                        </td>
-                        <td className="px-6 py-5 text-slate-700">
-                          {item.nomorInvoice.split("-").map((part, i, arr) => (
-                            <span key={i}>
-                              {part}
-                              {i !== arr.length - 1 && <br />}
-                            </span>
-                          ))}
+                        {/* <td className="px-6 py-5 text-slate-700">{item.id_pengiriman}</td> */}
+                        <td className="px-6 py-5 text-slate-700 font-medium">
+                          {item.nomorInvoice}
                         </td>
                         <td className="px-6 py-5 text-slate-700">
                           {item.tujuan}
                         </td>
                         <td className="px-6 py-5 text-slate-700">
-                          {item.kurir}
+                          {item.kurir || "-"}
                         </td>
                         <td className="px-6 py-5">
                           <span
-                            className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ${getStatusBadge(item.status)}`}
+                            className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium uppercase tracking-wider ${getStatusBadge(item.status)}`}
                           >
                             {item.status}
                           </span>
@@ -139,15 +162,12 @@ export default function PengirimanUI({ data, userName, userRole }: Props) {
                           <button
                             onClick={() => {
                               setSelectedItem(item);
-                              setIsModalOpen(true);
+                              setIsModalEditOpen(true);
                             }}
-                            className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                            className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-medium transition-colors bg-blue-50 px-3 py-1.5 rounded-md hover:bg-blue-100"
                           >
                             <ExternalLink size={14} />
-                            <span className="flex flex-col text-left leading-tight">
-                              <span>Update</span>
-                              <span>Status</span>
-                            </span>
+                            <span>Update</span>
                           </button>
                         </td>
                       </tr>
@@ -155,10 +175,11 @@ export default function PengirimanUI({ data, userName, userRole }: Props) {
                   ) : (
                     <tr>
                       <td
-                        colSpan={6}
+                        colSpan={5}
                         className="px-6 py-12 text-center text-slate-400"
                       >
-                        Belum ada data pengiriman.
+                        Belum ada data pengiriman. Klik "Buat Pengiriman" untuk
+                        menambahkan.
                       </td>
                     </tr>
                   )}
@@ -169,10 +190,18 @@ export default function PengirimanUI({ data, userName, userRole }: Props) {
         </div>
       </main>
 
+      {/* RENDER MODAL EDIT STATUS LAMA */}
       <ModalEditPengiriman
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isModalEditOpen}
+        onClose={() => setIsModalEditOpen(false)}
         dataPengiriman={selectedItem}
+      />
+
+      {/* 5. RENDER MODAL TAMBAH BARU */}
+      <ModalTambahPengiriman
+        isOpen={isModalTambahOpen}
+        onClose={() => setIsModalTambahOpen(false)}
+        availableInvoices={availableInvoices}
       />
     </div>
   );

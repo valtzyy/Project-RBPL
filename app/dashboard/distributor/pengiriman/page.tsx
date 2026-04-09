@@ -1,11 +1,11 @@
-import  prisma  from "@/lib/prisma";
+// app/dashboard/distributor/status-pengiriman/page.tsx
+import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import PengirimanUI from "@/components/dashboard/PengirimanUI";
+import StatusPengirimanUI from "@/components/dashboard/PengirimanUI";
 
-export default async function PagePengiriman() {
-  // 1. Cek Autentikasi & Role
+export default async function PageStatusPengiriman() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -20,36 +20,36 @@ export default async function PagePengiriman() {
     redirect("/dashboard");
   }
 
-  // 2. Ambil Data Pengiriman dari Database (Include Relasi Invoice)
-  const rawPengiriman = await prisma.pengiriman.findMany({
+  // 1. Ambil Semua Data Pengiriman
+  const dataPengiriman = await prisma.pengiriman.findMany({
+    include: { invoice: true },
     orderBy: { createdAt: "desc" },
-    include: {
-      invoice: true, // Pastikan relasi ke tabel invoice ada di schema.prisma
-    },
   });
 
-  // Helper Text Status
-  const getStatusText = (status: string) => {
-    if (status === "DIPROSES") return "Diproses";
-    if (status === "DIKIRIM") return "Dikirim";
-    if (status === "SELESAI") return "Selesai";
-    if (status === "DIBATALKAN") return "Dibatalkan";
-    return status;
-  };
+  // 2. Ambil Daftar Invoice yang BELUM punya pengiriman
+  // (Agar admin tidak bisa membuat pengiriman ganda untuk 1 invoice)
+  const availableInvoices = await prisma.invoice.findMany({
+    where: {
+      pengiriman: null, // Hanya yang pengirimannya masih kosong
+      status: { in: ["ISSUED", "PAID"] }, // Hanya yang sudah diterbitkan/lunas
+    },
+    select: { id: true, nomorInvoice: true, mitraName: true },
+    orderBy: { createdAt: "desc" },
+  });
 
-  // 3. Format data untuk UI
-  const formattedData = rawPengiriman.map((p) => ({
-    id_db: p.id,
-    id_pengiriman: p.nomorResi || `SHP-00${p.id}`,
-    nomorInvoice: p.invoice?.nomorInvoice || "-",
+  const formattedData = dataPengiriman.map((p) => ({
+    id: p.id,
+    nomorInvoice: p.invoice.nomorInvoice,
     tujuan: p.tujuan,
     kurir: p.kurir || "-",
-    status: getStatusText(p.status),
+    resi: p.nomorResi || "-",
+    status: p.status,
   }));
 
   return (
-    <PengirimanUI
+    <StatusPengirimanUI
       data={formattedData}
+      availableInvoices={availableInvoices} // Kirim data ini ke UI
       userName={user.name}
       userRole="Admin Distributor"
     />

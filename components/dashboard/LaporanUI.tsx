@@ -10,7 +10,7 @@ import {
   ArrowUpDown,
   LogOut,
   Menu,
-} from "lucide-react"; // Tambahkan Menu
+} from "lucide-react";
 import SidebarDistributor from "@/components/SidebarDistributor";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -31,7 +31,7 @@ interface Props {
 
 export default function LaporanUI({ data, userName, userRole }: Props) {
   const router = useRouter();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -48,7 +48,8 @@ export default function LaporanUI({ data, userName, userRole }: Props) {
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans">
-      
+      {/* 1. PERBAIKAN DI SINI: MANGGIL KOMPONEN SIDEBAR */}
+      <SidebarDistributor />
 
       <main className="md:ml-64 w-full min-h-screen flex flex-col transition-all duration-300">
         {/* TOPBAR */}
@@ -79,6 +80,7 @@ export default function LaporanUI({ data, userName, userRole }: Props) {
                 <p className="text-sm font-semibold text-slate-700">
                   {userName}
                 </p>
+                <p className="text-xs text-slate-500">{userRole}</p>
               </div>
               <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                 <User size={18} />
@@ -181,11 +183,10 @@ export default function LaporanUI({ data, userName, userRole }: Props) {
                           {item.total}
                         </td>
                         <td className="px-4 md:px-6 py-5">
-                          {/* DIBUAT AGAR BISA PINDAH HALAMAN */}
                           <button
                             onClick={() =>
                               router.push(
-                                `/dashboard/manajemen/laporan/${item.id_db}`,
+                                `/dashboard/distributor/laporan/${item.id_db}`,
                               )
                             }
                             className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-medium transition-colors"

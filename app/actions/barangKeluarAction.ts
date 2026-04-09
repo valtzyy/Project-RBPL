@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 // ==========================================
-// 1. FUNGSI TAMBAH BARANG KELUAR (Asumsi dari kodemu)
+// 1. FUNGSI TAMBAH BARANG KELUAR
 // ==========================================
 export async function tambahBarangKeluar(formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -17,14 +17,19 @@ export async function tambahBarangKeluar(formData: FormData) {
   const tujuan = formData.get("tujuan") as string;
   const tanggal = new Date();
 
-  if (!barangId || !jumlah || !tujuan)
-    return { error: "Mohon lengkapi semua data" };
+  // Validasi ketat: pastikan jumlah adalah angka positif
+  if (!barangId || isNaN(jumlah) || jumlah <= 0 || !tujuan) {
+    return { error: "Mohon lengkapi semua data dengan benar" };
+  }
 
   try {
-    // Cek stok saat ini
     const barang = await prisma.barang.findUnique({ where: { id: barangId } });
+
+    // Kunci Anti-Minus: Jika barang tidak ada atau stok kurang
     if (!barang || barang.stok < jumlah) {
-      return { error: "Stok barang tidak mencukupi!" };
+      return {
+        error: `Stok tidak cukup! Sisa stok saat ini: ${barang?.stok || 0}`,
+      };
     }
 
     await prisma.$transaction([
@@ -39,7 +44,7 @@ export async function tambahBarangKeluar(formData: FormData) {
       }),
       prisma.barang.update({
         where: { id: barangId },
-        data: { stok: { decrement: jumlah } }, // Kurangi stok
+        data: { stok: { decrement: jumlah } },
       }),
     ]);
 
@@ -63,21 +68,23 @@ export async function updateBarangKeluar(
     tanggal: string;
   },
 ) {
+  if (payload.jumlahBaru <= 0) return { error: "Jumlah tidak valid" };
+
   try {
     const dataLama = await prisma.barangKeluar.findUnique({ where: { id } });
     if (!dataLama) return { error: "Data tidak ditemukan" };
 
-    // Hitung selisih: Jumlah Baru - Jumlah Lama
-    // Contoh: Dulu keluar 5, sekarang diubah jadi 8 (selisih 3). Stok harus dikurangi 3 lagi.
     const selisih = payload.jumlahBaru - dataLama.jumlahKeluar;
 
-    // Opsional: Cek apakah stok cukup jika selisihnya positif (barang yang keluar tambah banyak)
     if (selisih > 0) {
       const barang = await prisma.barang.findUnique({
         where: { id: payload.barangId },
       });
-      if (!barang || barang.stok < selisih)
-        return { error: "Stok tidak mencukupi untuk penambahan ini!" };
+      if (!barang || barang.stok < selisih) {
+        return {
+          error: `Stok tidak cukup untuk penambahan! Sisa stok: ${barang?.stok || 0}`,
+        };
+      }
     }
 
     await prisma.$transaction([
@@ -92,7 +99,7 @@ export async function updateBarangKeluar(
       }),
       prisma.barang.update({
         where: { id: payload.barangId },
-        data: { stok: { decrement: selisih } }, // Decrement selisih
+        data: { stok: { decrement: selisih } },
       }),
     ]);
 
@@ -113,7 +120,6 @@ export async function hapusBarangKeluar(id: number) {
     if (!dataLama) return { error: "Data tidak ditemukan" };
 
     await prisma.$transaction([
-      // Kembalikan stok karena pengeluaran dibatalkan
       prisma.barang.update({
         where: { id: dataLama.barangId },
         data: { stok: { increment: dataLama.jumlahKeluar } },
