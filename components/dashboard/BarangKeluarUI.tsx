@@ -87,6 +87,7 @@ export default function BarangKeluarUI({
                 <p className="text-sm font-semibold text-slate-700">
                   {userName}
                 </p>
+                <p className="text-xs text-slate-500">{userRole}</p>
               </div>
               <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                 <User size={20} />
