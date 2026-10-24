@@ -1,8 +1,12 @@
 // app/api/barang/route.ts
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; 
+import prisma from "@/lib/prisma";
+import { requireRole } from "@/lib/authz";
 
 export async function POST(request: Request) {
+  const akses = await requireRole("ADMIN_GUDANG");
+  if ("response" in akses) return akses.response;
+
   try {
     //Ambil data JSON dari body request
     const body = await request.json();

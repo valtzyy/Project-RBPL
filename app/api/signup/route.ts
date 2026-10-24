@@ -1,8 +1,13 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { requireRole } from "@/lib/authz";
 
 export async function POST(req: Request) {
+  // Pendaftaran hanya oleh Admin Gudang yang sudah login (sebelumnya terbuka untuk anonim)
+  const akses = await requireRole("ADMIN_GUDANG");
+  if ("response" in akses) return akses.response;
+
   try {
     const body = await req.json();
     const { name, email, password } = body;
