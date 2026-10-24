@@ -136,9 +136,12 @@ model BarangKeluar {
   barang   Barang @relation(fields: [barangId], references: [id])
   userId   String // Admin Gudang yang input
   user     User   @relation(fields: [userId], references: [id])
+
+  @@index([tanggalKeluar])
+  @@index([barangId])
 }
 
-// Purchase Order 
+// Purchase Order
 
 model PO {
   id           Int      @id @default(autoincrement())
