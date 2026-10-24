@@ -12,6 +12,12 @@ export default async function PageBarangKeluar() {
 
   if (!session) redirect("/login");
 
+  // Hanya Admin Gudang yang boleh mengakses halaman ini
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+  });
+  if (!user || user.role !== "ADMIN_GUDANG") redirect("/unauthorized");
+
   // 1. Ambil History Barang Keluar
   const historyData = await prisma.barangKeluar.findMany({
     orderBy: { tanggalKeluar: "desc" },
